@@ -1,28 +1,6 @@
-import {
-  Port, rough,
-  LitElement, html, css,
-//   precaching, registerRoute, BackgroundSyncPlugin,
-} from './modules.bundle.js';
-
-// Check that service workers are supported
-if ('serviceWorker' in navigator) {
-  // Use the window load event to keep the page load performant
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js');
-  });
-}
-
-async function request() {
-  let filters = [
-    { vendorId: 0x239A }, // Adafruit boards
-    { vendorId: 0xcafe }, // TinyUSB example
-  ]
-  let device = await navigator.usb.requestDevice({ filters });
-  return new Port(device);
-}
-
+import { Port, rough, LitElement, html, css } from './modules.bundle.js';
+'serviceWorker' in navigator && window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
 class TripRecorder extends LitElement {
-
   static get properties() {
     return {
       connected: { type: Boolean },
@@ -30,7 +8,6 @@ class TripRecorder extends LitElement {
       size: { type: Number },
     }
   }
-
   constructor() {
     super();
     this.connected = false;
@@ -38,7 +15,12 @@ class TripRecorder extends LitElement {
     this.size = 26;
     this.width = this.height = 192;
   }
-
+  async request() {
+    return new Port(await navigator.usb.requestDevice({ filters: [
+      { vendorId: 0x239A }, // Adafruit boards
+      { vendorId: 0xcafe }, // TinyUSB example
+    ] }));
+  }
   connectedCallback() {
     super.connectedCallback();
     console.log('Starting', event);
@@ -47,11 +29,9 @@ class TripRecorder extends LitElement {
       .then(ports => {
         if (ports.length) {
           this.port = ports[0];
-//           this.port.send(new TextEncoder('utf-8').encode(String.fromCharCode(0)));
         } else console.log("no ports");
       });
   }
-
   connect(port) {
     console.log("Connecting to Port: ", port, this);
     let receive = this.receive;
@@ -61,42 +41,35 @@ class TripRecorder extends LitElement {
       port.onReceiveError = console.error;
     }, console.error);
   }
-
   disconnect(port) {
     console.log("Disconnecting from Port: ", port);
     port.disconnect();
   }
-
   receive(element) {
     return data => {
       let textDecoder = new TextDecoder();
       let received = parseInt(textDecoder.decode(data));
-//       console.log(ticks);
       if (!isNaN(received)) {
         element.ticks.unshift(Date.now());
         element.requestUpdate();
       }
-  //     console.log('received: ', received);
       return received
     }
   }
-
   toggle() {
     if (this.connected) {
       this.disconnect(this.port)
     } else {
-      request()
+      this.request()
       .then(selected => (this.port = selected))
       .then(() => this.connect(this.port))
       .catch(console.error);
     }
   }
-
   firstUpdated() {
     // this.drawWheelCanvas(this.shadowRoot.getElementById('canvas'), this.width, this.height);
     this.drawWheelSVG(this.shadowRoot.getElementById('svg'), this.width, this.height);
   }
-
   drawWheelCanvas(canvas, w, h) {
     this.rc = rough.canvas(canvas);
     this.rc.rectangle(w/8, h/8, 6*w/8, 6*h/8);
@@ -112,7 +85,6 @@ class TripRecorder extends LitElement {
       this.rc.line(w/2, h/2, w/2 + w/4*Math.cos(i*Math.PI/8), h/2 + h/4*Math.sin(i*Math.PI/8)); // x1, y1, x2, y2     
     }
   }
-
   drawWheelSVG(svg, w, h) {
     let rs = rough.svg(svg);
     svg.appendChild(rs.rectangle(w/8, h/8, 6*w/8, 6*h/8));
@@ -128,28 +100,10 @@ class TripRecorder extends LitElement {
       svg.appendChild(rs.line(w/2, h/2, w/2 + w/4*Math.cos(i*Math.PI/8), h/2 + h/4*Math.sin(i*Math.PI/8))); // x1, y1, x2, y2     
     }
   }
-
-  static get styles() {
-    return css`
-      svg > g:not(:first-child) {
-        animation-name: spin;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear;
-        animation-duration: var(--animationDuration);
-        transform-origin: 50% 50%;
-      }
-      @keyframes spin {
-        from { transform:rotate(0deg); }
-        to { transform:rotate(360deg); }
-      }
-    `;
-  }
-
   tick() {
     this.ticks.unshift(Date.now());
     this.requestUpdate();
   }
-
   get circumference() {
     return Math.PI*0.0254*this.size;
   }
@@ -163,20 +117,40 @@ class TripRecorder extends LitElement {
   }
   get speed() {
     return this.time ? parseInt(3600 * this.circumference / this.time) : 0;
-
   }
-
   reset() {
     this.ticks = [];
   }
-
+  static get styles() {
+    return css`
+      svg > g:not(:first-child) {
+        animation-name: spin;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        animation-duration: var(--animationDuration);
+        transform-origin: 50% 50%;
+      }
+      @keyframes spin {
+        from { transform:rotate(0deg); }
+        to { transform:rotate(360deg); }
+      }
+      label {
+        display: block;
+        font-size: larger;    
+      }
+      wired-slider {
+        display: block;
+        margin: auto;
+      }
+    `;
+  }
   render() {
-    //     console.log('render', this);
-    this.duration = this.time;
     return html`
       <style>
         svg {
-          --animationDuration: ${this.duration}ms;
+          --animationDuration: ${this.time}ms;
+          display: block;
+          margin: auto;
         }
       </style>
       <wired-button @click=${this.reset}>Reset</wired-button>
@@ -185,19 +159,16 @@ class TripRecorder extends LitElement {
       <p>Distance Travelled: ${this.distance}m</p>
       <p>Current Speed: ${this.speed} km/h</p>
       <svg width=${this.width} height=${this.height} id="svg"></svg>
-      <h2>Wheel Size</h2>
-      <wired-slider step="0.5" knobradius="15" value=${this.size} @change=${this.updateSize} min="16" max="36"></wired-slider>
+      <label for="size">Wheel Size
+        <wired-slider id="size" step="0.5" knobradius="15" value=${this.size} @change=${this.updateSize} min="16" max="36"></wired-slider>
+      </label>
       <p>Diameter: ${this.size} Inches</p>
       <p>Circumference: ${parseInt(100 * this.circumference)/100}m</p>
     `;
-  }
-
-  // <canvas width=${this.width} height=${this.height} id="canvas"></canvas>
-  
+  }  
   updateSize(event) {
     console.log(event.detail.value);
     this.size = event.detail.value;
   }
 }
-
 customElements.define('trip-recorder', TripRecorder);
