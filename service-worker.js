@@ -14,7 +14,7 @@
 
 // https://css-tricks.com/serviceworker-for-offline/
 
-let version = "v1::1";
+let version = "v1:1:1";
 
 
 self.addEventListener('install', installHandler);
@@ -30,7 +30,7 @@ self.addEventListener("activate", activateHandler);
   are offline.
 */
 function installHandler(event) {
-  console.log('Worker: Install event in progress');
+  // console.log('Worker: Install event in progress');
   event.waitUntil(
     /* The caches built-in is a promise-based API that helps you cache responses,
        as well as finding and deleting them.
@@ -54,7 +54,7 @@ function installHandler(event) {
         ]);
       })
       .then(function() {
-        console.log('WORKER: install completed');
+        // console.log('WORKER: install completed');
       })
   );
 }
@@ -67,7 +67,7 @@ function installHandler(event) {
 */
 
 function fetchHandler(event) {
-  console.log('WORKER: fetch event in progress.');
+  // console.log('WORKER: fetch event in progress.');
 
   /* We should only cache GET requests, and deal with the rest of method in the
      client-side, by handling failed POST,PUT,PATCH,etc. requests.
@@ -76,7 +76,7 @@ function fetchHandler(event) {
     /* If we don't block the event as shown below, then the request will go to
        the network as usual.
     */
-    console.log('WORKER: fetch event ignored.', event.request.method, event.request.url);
+    // console.log('WORKER: fetch event ignored.', event.request.method, event.request.url);
     return;
   }
   /* Similar to event.waitUntil in that it blocks the fetch event on a promise.
@@ -107,7 +107,7 @@ function fetchHandler(event) {
         /* We return the cached response immediately if there is one, and fall
            back to waiting on the network as usual.
         */
-        console.log('WORKER: fetch event', cached ? '(cached)' : '(network)', event.request.url);
+        // console.log('WORKER: fetch event', cached ? '(cached)' : '(network)', event.request.url);
         return cached || networked;
 
         function fetchedFromNetwork(response) {
@@ -116,7 +116,7 @@ function fetchHandler(event) {
           */
           var cacheCopy = response.clone();
 
-          console.log('WORKER: fetch response from network.', event.request.url);
+          // console.log('WORKER: fetch response from network.', event.request.url);
 
           caches
             // We open a cache to store the response for this request.
@@ -129,7 +129,7 @@ function fetchHandler(event) {
               cache.put(event.request, cacheCopy);
             })
             .then(function() {
-              console.log('WORKER: fetch response stored in cache.', event.request.url);
+              // console.log('WORKER: fetch response stored in cache.', event.request.url);
             });
 
           // Return the response so that the promise is settled in fulfillment.
@@ -152,7 +152,7 @@ function fetchHandler(event) {
              - Generate a Response programmaticaly, as shown below, and return that
           */
 
-          console.log('WORKER: fetch request failed in both cache and network.');
+          // console.log('WORKER: fetch request failed in both cache and network.');
 
           /* Here we're creating a response programmatically. The first parameter is the
              response body, and the second one defines the options for the response.
@@ -180,7 +180,7 @@ function activateHandler(event) {
   /* Just like with the install event, event.waitUntil blocks activate on a promise.
      Activation will fail unless the promise is fulfilled.
   */
-  console.log('WORKER: activate event in progress.');
+  // console.log('WORKER: activate event in progress.');
 
   event.waitUntil(
     caches
@@ -205,7 +205,7 @@ function activateHandler(event) {
         );
       })
       .then(function() {
-        console.log('WORKER: activate completed.');
+        // console.log('WORKER: activate completed.');
       })
   );
 }
