@@ -7,17 +7,16 @@
     <meta name="author" content="Ryan White">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Connect to hall effect sensors on a bicycle to read and display speed and cadence for cyclists.">
-    <link rel="apple-touch-icon" href="/images/icons-192.png">
-    <link rel="icon" type="image/png"  href="/images/icons-512.png">
+    <link rel="apple-touch-icon" href="images/icons-192.png">
+    <link rel="icon" type="image/png"  href="images/icons-512.png">
     <link rel="stylesheet" href="index.css">
-    <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="preload" href="/modules.bundle.js" as="script">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Chilanka&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chilanka&display=swap"></noscript>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="modulepreload" href="modules.bundle.js">
   </head>
   <body>
     <h1>Measure Speed and Cadence</h1>
     <trip-recorder></trip-recorder>
+    <script>'serviceWorker' in navigator && window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));</script>
     <script type="module" src="index.js"></script>
   </body>
 </html>
