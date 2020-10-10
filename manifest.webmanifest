@@ -1,0 +1,29 @@
+{
+  "short_name": "Speedence",
+  "name": "Speedence: Bicycle Speed and Cadence",
+  "description": "Collect and analysis speed and cadence data from Bicycles",
+  "icons": [
+    {
+      "src": "/images/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/icons-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#5C6274",
+  "shortcuts": []
+}
