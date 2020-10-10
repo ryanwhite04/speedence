@@ -9,9 +9,11 @@
     <meta name="description" content="Connect to hall effect sensors on a bicycle to read and display speed and cadence for cyclists.">
     <link rel="apple-touch-icon" href="/images/icons-192.png">
     <link rel="icon" type="image/png"  href="/images/icons-512.png">
-    <link href="https://fonts.googleapis.com/css2?family=Chilanka&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="preload" href="/modules.bundle.js" as="script">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Chilanka&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chilanka&display=swap"></noscript>
   </head>
   <body>
     <h1>Measure Speed and Cadence</h1>
