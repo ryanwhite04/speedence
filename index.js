@@ -1,5 +1,4 @@
 import { Port, rough, LitElement, html, css } from './modules.bundle.js';
-'serviceWorker' in navigator && window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
 class TripRecorder extends LitElement {
   static get properties() {
     return {
@@ -121,8 +120,15 @@ class TripRecorder extends LitElement {
   reset() {
     this.ticks = [];
   }
+  updateSize(event) {
+    this.size = event.detail.value;
+  }
   static get styles() {
     return css`
+      svg {
+        display: block;
+        margin: auto;
+      }
       svg > g:not(:first-child) {
         animation-name: spin;
         animation-iteration-count: infinite;
@@ -149,8 +155,6 @@ class TripRecorder extends LitElement {
       <style>
         svg {
           --animationDuration: ${this.time}ms;
-          display: block;
-          margin: auto;
         }
       </style>
       <wired-button @click=${this.reset}>Reset</wired-button>
@@ -165,10 +169,6 @@ class TripRecorder extends LitElement {
       <p>Diameter: ${this.size} Inches</p>
       <p>Circumference: ${parseInt(100 * this.circumference)/100}m</p>
     `;
-  }  
-  updateSize(event) {
-    console.log(event.detail.value);
-    this.size = event.detail.value;
   }
 }
 customElements.define('trip-recorder', TripRecorder);
