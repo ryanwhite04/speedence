@@ -14,13 +14,12 @@ WEBUSB_URL_DEF(landingPage, 1, "speedence.com");
 
 int led_pin = LED_BUILTIN;
 int previous = 0;
-int counter = 0;
+int wheel = 0;
+int pedal = 1;
 int wait;
 void setup() {
   pinMode(led_pin, OUTPUT);
-  pinMode(4, INPUT_PULLUP);
-  digitalWrite(led_pin, LOW);
-  analogReadResolution(16);
+  pinMode(11, INPUT_PULLUP);
   usb_web.setLandingPage(&landingPage);
   usb_web.setLineStateCallback(line_state_callback);
   usb_web.begin();
@@ -29,6 +28,9 @@ void setup() {
   Serial.println("TinyUSB WebUSB Serial example");
   randomSeed(analogRead(A0));
   wait = random(200, 500);
+ 
+  attachInterrupt(digitalPinToInterrupt(12), sendWheel, LOW);
+  attachInterrupt(digitalPinToInterrupt(13), sendPedal, LOW);
 }
 
 // function to echo to both Serial and WebUSB
@@ -40,15 +42,25 @@ void echo_all(char chr) {
 }
 
 void loop() {
-  delay(100);
+  // delay(100);
   // Serial.println(30000);
-  Serial.println(analogRead(A0));
+  // Serial.println(analogRead(A0));
   int now = millis();
-  if (now - previous > wait) {
+  if (now - previous > wait && !digitalRead(11)) {
     previous = now;
     wait = random(200, 500);
     usb_web.println(counter++);
   }
+}
+
+void sendWheel() {
+  wheel += 2;
+  usb_web.println(wheel);
+}
+
+void sendPedal() {
+  pedal += 2;
+  usb_web.println(pedal);
 }
 
 void line_state_callback(bool connected) {
