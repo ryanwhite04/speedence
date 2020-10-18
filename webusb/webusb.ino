@@ -22,7 +22,7 @@ int pedalWait;
 
 void setup() {
  
-  pinMode(11, INPUT_PULLUP);
+  pinMode(9, INPUT_PULLUP);
   usb_web.setLandingPage(&landingPage);
   usb_web.setLineStateCallback(line_state_callback);
   usb_web.begin();
@@ -31,6 +31,8 @@ void setup() {
   randomSeed(analogRead(A0));
   wheelWait = random(200, 500);
   pedalWait = random(500, 800);
+  attachInterrupt(digitalPinToInterrupt(10), sendWheel, LOW);
+  attachInterrupt(digitalPinToInterrupt(11), sendPedal, LOW);
   attachInterrupt(digitalPinToInterrupt(12), sendWheel, LOW);
   attachInterrupt(digitalPinToInterrupt(13), sendPedal, LOW);
 }
