@@ -30,7 +30,7 @@ void setup() {
   while(!USBDevice.mounted()) delay(1);
   randomSeed(analogRead(A0));
   pedalWait = random(200, 500);
-  pedalWait = random(500, 800);
+  wheelWait = random(500, 800);
   attachInterrupt(digitalPinToInterrupt(12), sendWheel, LOW);
   attachInterrupt(digitalPinToInterrupt(13), sendPedal, LOW);
 }
