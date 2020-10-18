@@ -29,23 +29,25 @@ void setup() {
   Serial.begin(115200);
   while(!USBDevice.mounted()) delay(1);
   randomSeed(analogRead(A0));
-  pedalWait = random(200, 500);
-  wheelWait = random(500, 800);
+  wheelWait = random(200, 500);
+  pedalWait = random(500, 800);
   attachInterrupt(digitalPinToInterrupt(12), sendWheel, LOW);
   attachInterrupt(digitalPinToInterrupt(13), sendPedal, LOW);
 }
 
 void loop() {
   int now = millis();
-  if (now - wheelPrevious > wheelWait && !digitalRead(11)) {
-    wheelPrevious = now;
-    wheelWait = random(200, 500);
-    sendWheel();
-  }
-  if (now - pedalPrevious > pedalWait && !digitalRead(11)) {
-    pedalPrevious = now;
-    pedalWait = random(500, 800);
-    sendPedal();
+  if (!digitalRead(11)) {
+     if (now - wheelPrevious > wheelWait) {
+       wheelPrevious = now;
+       wheelWait = random(200, 500);
+       sendWheel();
+     }
+     if (now - pedalPrevious > pedalWait) {
+       pedalPrevious = now;
+       pedalWait = random(500, 800);
+       sendPedal();
+     }
   }
 }
 
