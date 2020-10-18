@@ -39,7 +39,7 @@ void setup() {
 
 void loop() {
   int now = millis();
-  if (!digitalRead(11)) {
+  if (!digitalRead(9)) {
      if (now - wheelPrevious > wheelWait) {
        wheelPrevious = now;
        wheelWait = random(200, 500);
