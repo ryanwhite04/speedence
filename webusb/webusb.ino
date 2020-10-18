@@ -40,14 +40,12 @@ void loop() {
   if (now - wheelPrevious > wheelWait && !digitalRead(11)) {
     wheelPrevious = now;
     wheelWait = random(200, 500);
-    wheel += 2;
-    relay(wheel);
+    sendWheel();
   }
   if (now - pedalPrevious > pedalWait && !digitalRead(11)) {
     pedalPrevious = now;
     pedalWait = random(500, 800);
-    pedal += 2;
-    relay(pedal);
+    sendPedal();
   }
 }
 
