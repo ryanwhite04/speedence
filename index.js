@@ -3,14 +3,16 @@ class TripRecorder extends LitElement {
   static get properties() {
     return {
       connected: { type: Boolean },
-      ticks: { type: Array },
+      wheels: { type: Array },
+      pedals: { type: Array },
       size: { type: Number },
     }
   }
   constructor() {
     super();
     this.connected = false;
-    this.ticks = [];
+    this.wheels = [];
+    this.pedals = [];
     this.size = 26;
     this.width = this.height = 192;
   }
@@ -45,11 +47,16 @@ class TripRecorder extends LitElement {
     port.disconnect();
   }
   receive(element) {
+    console.log('received', { element });
     return data => {
       let textDecoder = new TextDecoder();
       let received = parseInt(textDecoder.decode(data));
       if (!isNaN(received)) {
-        element.ticks.unshift(Date.now());
+        if (received) {
+          element[received % 2 ? "wheels" : "pedals"].unshift(Date.now());
+        } else {
+          this.connected = true;
+        }
         element.requestUpdate();
       }
       return received
@@ -99,26 +106,40 @@ class TripRecorder extends LitElement {
       svg.appendChild(rs.line(w/2, h/2, w/2 + w/4*Math.cos(i*Math.PI/8), h/2 + h/4*Math.sin(i*Math.PI/8))); // x1, y1, x2, y2     
     }
   }
-  tick() {
-    this.ticks.unshift(Date.now());
+  wheel() {
+    this.wheels.unshift(Date.now());
+    this.requestUpdate();
+  }
+  pedal() {
+    this.pedals.unshift(Date.now());
     this.requestUpdate();
   }
   get circumference() {
     return Math.PI*0.0254*this.size;
   }
   get distance() {
-    return parseInt(this.circumference * this.ticks.length);
+    return parseInt(this.circumference * this.wheels.length);
   }
-  get time() {
-    return this.ticks.length > 1 ?
-      this.ticks[0] - this.ticks[1] :
+  get wheelTime() {
+    return this.wheels.length > 1 ?
+      this.wheels[0] - this.wheels[1] :
       0;
   }
   get speed() {
-    return this.time ? parseInt(3600 * this.circumference / this.time) : 0;
+    return this.wheelTime ? parseInt(3600 * this.circumference / this.wheelTime) : 0;
+  }
+  get pedalTime() {
+    return this.pedals.length > 1 ?
+      this.pedals[0] - this.pedals[1] :
+      0;
+  }
+  get cadence() {
+    console.log('cadence', this.pedalTime);;
+    return this.pedalTime ? parseInt(60000/this.pedalTime) : 0;
   }
   reset() {
-    this.ticks = [];
+    this.wheels = [];
+    this.pedals = [];
   }
   updateSize(event) {
     this.size = event.detail.value;
@@ -154,14 +175,16 @@ class TripRecorder extends LitElement {
     return html`
       <style>
         svg {
-          --animationDuration: ${this.time}ms;
+          --animationDuration: ${this.wheelTime}ms;
         }
       </style>
       <wired-button @click=${this.reset}>Reset</wired-button>
-      <wired-button @click=${this.tick}>Tick</wired-button>
+      <wired-button @click=${this.pedal}>Pedal</wired-button>
+      <wired-button @click=${this.wheel}>Wheel</wired-button>
       <wired-button @click=${this.toggle}>${this.connected ? "Disconnect" : "Connect"}</wired-button>
       <p>Distance Travelled: ${this.distance}m</p>
-      <p>Current Speed: ${this.speed} km/h</p>
+      <p>Speed: ${this.speed} km/h</p>
+      <p>Cadence: ${this.cadence} rpm</p>
       <svg width=${this.width} height=${this.height} id="svg"></svg>
       <label for="size">Wheel Size
         <wired-slider id="size" step="0.5" knobradius="15" value=${this.size} @change=${this.updateSize} min="16" max="36"></wired-slider>
