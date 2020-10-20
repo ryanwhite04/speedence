@@ -18,5 +18,5 @@ void setup() {
 
 void loop() {}
 void sendWheel() { wheel += 2; Serial.print(wheel); webusb.print(wheel); }
-void sendPedal() { pedal += 2; Serial.print(wheel); webusb.print(pedal); }
+void sendPedal() { pedal += 2; Serial.print(pedal); webusb.print(pedal); }
 void line_state_callback(bool connected) { if (connected) { Serial.print(0); webusb.print(0); } }
