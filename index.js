@@ -50,7 +50,9 @@ class TripRecorder extends LitElement {
     console.log('received', { element });
     return data => {
       let textDecoder = new TextDecoder();
-      let received = parseInt(textDecoder.decode(data));
+      let decoded = textDecoder.decode(data);
+      console.log('received data', decoded);
+      let received = parseInt(decoded);
       if (!isNaN(received)) {
         if (received) {
           element[received % 2 ? "wheels" : "pedals"].unshift(Date.now());
@@ -65,6 +67,7 @@ class TripRecorder extends LitElement {
   toggle() {
     if (this.connected) {
       this.disconnect(this.port)
+      this.connected = false;
     } else {
       this.request()
       .then(selected => (this.port = selected))
