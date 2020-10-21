@@ -177,6 +177,9 @@ class TripRecorder extends LitElement {
         display: block;
         margin: auto;
       }
+      .large {
+        font-size: xxx-large;
+      }
     `;
   }
   render() {
@@ -190,9 +193,12 @@ class TripRecorder extends LitElement {
       <wired-button @click=${this.pedal}>Pedal</wired-button>
       <wired-button @click=${this.wheel}>Wheel</wired-button>
       <wired-button @click=${this.toggle}>${this.connected ? "Disconnect" : "Connect"}</wired-button>
-      <p>Distance Travelled: ${this.distance}m</p>
-      <p>Speed: ${this.speed} km/h</p>
-      <p>Cadence: ${this.cadence} rpm</p>
+      <p>Distance Travelled</p>
+      <p class="large">${this.distance}m</p>
+      <p>Speed</p>
+      <p class="large">${this.speed} km/h</p>
+      <p>Cadence</p>
+      <p class="large">${this.cadence} rpm</p>
       <svg width=${this.width} height=${this.height} id="svg"></svg>
       <label for="size">Wheel Size
         <wired-slider id="size" step="0.5" knobradius="15" value=${this.size} @change=${this.updateSize} min="16" max="36"></wired-slider>
