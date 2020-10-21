@@ -11,9 +11,9 @@ class TripRecorder extends LitElement {
   constructor() {
     super();
     this.connected = false;
-    this.wheels = [];
-    this.pedals = [];
-    this.size = 26;
+    this.wheels = localStorage.wheels ? JSON.parse(localStorage.wheels) : [];
+    this.pedals = localStorage.pedals ? JSON.parse(localStorage.pedals) : [];
+    this.size = localStorage.size ? JSON.parse(localStorage.size) : 26;
     this.width = this.height = 192;
   }
   async request() {
@@ -111,10 +111,12 @@ class TripRecorder extends LitElement {
   }
   wheel() {
     this.wheels.unshift(Date.now());
+    localStorage.setItem('wheels', JSON.stringify(this.wheels));
     this.requestUpdate();
   }
   pedal() {
     this.pedals.unshift(Date.now());
+    localStorage.setItem('pedals', JSON.stringify(this.pedals));
     this.requestUpdate();
   }
   get circumference() {
@@ -146,6 +148,7 @@ class TripRecorder extends LitElement {
   }
   updateSize(event) {
     this.size = event.detail.value;
+    localStorage.setItem('size', JSON.stringify(this.size));
   }
   static get styles() {
     return css`
