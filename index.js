@@ -144,7 +144,9 @@ class TripRecorder extends LitElement {
   }
   reset() {
     this.wheels = [];
+    localStorage.setItem('wheels', JSON.stringify(this.wheels));
     this.pedals = [];
+    localStorage.setItem('pedals', JSON.stringify(this.pedals));
   }
   updateSize(event) {
     this.size = event.detail.value;
