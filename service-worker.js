@@ -14,7 +14,7 @@
 
 // https://css-tricks.com/serviceworker-for-offline/
 
-let version = "v1:1:3";
+let version = "v1:1:4";
 
 
 self.addEventListener('install', installHandler);
