@@ -133,6 +133,12 @@ class TripRecorder extends LitElement {
   get speed() {
     return this.wheelTime ? parseInt(3600 * this.circumference / this.wheelTime) : 0;
   }
+  get speedAverage() {
+    const time = this.wheels.length > 1 ?
+      (this.wheels[0] - this.wheels[this.wheels.length - 1]) / this.wheels.length:
+      0;
+    return time ? parseInt(3600 * this.circumference / time) : 0;
+  }
   get pedalTime() {
     return this.pedals.length > 1 ?
       this.pedals[0] - this.pedals[1] :
@@ -141,6 +147,13 @@ class TripRecorder extends LitElement {
   get cadence() {
     console.log('cadence', this.pedalTime);;
     return this.pedalTime ? parseInt(60000/this.pedalTime) : 0;
+  }
+  get cadenceAverage() {
+    const time = this.pedals.length > 1 ?
+      (this.pedals[0] - this.pedals[this.pedals.length - 1]) / this.pedals.length :
+      0;
+    console.log('cadence', this.pedalTime);;
+    return time ? parseInt(60000/time) : 0;
   }
   reset() {
     this.wheels = [];
@@ -195,10 +208,10 @@ class TripRecorder extends LitElement {
       <wired-button @click=${this.toggle}>${this.connected ? "Disconnect" : "Connect"}</wired-button>
       <p>Distance Travelled</p>
       <p class="large">${this.distance}m</p>
-      <p>Speed</p>
-      <p class="large">${this.speed} km/h</p>
-      <p>Cadence</p>
-      <p class="large">${this.cadence} rpm</p>
+      <p>Speed</p><p class="large">${this.speed} km/h</p>
+      <p>Average Speed</p><p class="large">${this.speedAverage} km/h</p>
+      <p>Cadence</p><p class="large">${this.cadence} rpm</p>
+      <p>Average Cadence</p><p class="large">${this.cadenceAverage} RPM</p>
       <svg width=${this.width} height=${this.height} id="svg"></svg>
       <label for="size">Wheel Size
         <wired-slider id="size" step="0.5" knobradius="15" value=${this.size} @change=${this.updateSize} min="16" max="36"></wired-slider>
