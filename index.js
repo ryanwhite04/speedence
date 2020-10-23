@@ -178,7 +178,7 @@ class TripRecorder extends LitElement {
         margin: auto;
       }
       .large {
-        font-size: xxx-large;
+        font-size: xx-large;
       }
     `;
   }
